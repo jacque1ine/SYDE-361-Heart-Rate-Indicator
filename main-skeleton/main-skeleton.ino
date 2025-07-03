@@ -25,6 +25,10 @@ void setLEDColour(int zone);            // drive RGB LED for zone
 int           prevZone    = 0;
 unsigned long lastSample  = 0;          // ms timestamp of last HR read
 
+// User inputs 
+int userAge = 25;
+int restingHR = 60;
+
 /* ---------- Arduino lifecycle ---------- */
 void setup() {
   // TODO: initialize LCD, RGB LED pins, buzzer pin, buttons, HR sensor
@@ -52,18 +56,37 @@ void loop() {
 
 /* ---------- Helper function stubs ---------- */
 int getMaxHeartRate(int age) {
-  // TODO: return 208 – 0.7 × age
-  return 0;
+  return (int)(208 - 0.7 * age);
 }
 
 int readFromHeartRateSensor() {
-  // TODO: read and return current HR
-  return 0;
+  // TODO: Replace this with actual sensor reading logic
+  return 120; // Example HR for testing
 }
 
+// Calculate HRR and determine current zone using Karvonen
 int getCurrentZone(int heartRate) {
-  // TODO: compute and return zone index (int)
-  return 0;
+  int maxHR = getMaxHeartRate(userAge);
+  int HRR = maxHR - restingHR;
+
+  float zones[][2] = {
+    {0.50, 0.60}, // Zone 1
+    {0.60, 0.70}, // Zone 2
+    {0.70, 0.80}, // Zone 3
+    {0.80, 0.90}, // Zone 4
+    {0.90, 1.00}  // Zone 5
+  };
+
+  for (int i = 0; i < 5; i++) {
+    int lowerBound = restingHR + HRR * zones[i][0];
+    int upperBound = restingHR + HRR * zones[i][1];
+
+    if (heartRate >= lowerBound && heartRate < upperBound) {
+      return i + 1; // zones are 1-indexed
+    }
+  }
+
+  return 0; // No zone matched
 }
 
 void setLEDColour(int zone) {
