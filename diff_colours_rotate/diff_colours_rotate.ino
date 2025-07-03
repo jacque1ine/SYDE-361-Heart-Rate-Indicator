@@ -2,9 +2,9 @@
 //  RGB LED with Arduino - different colours rotaing 
 
 //Defining  variable and the GPIO pin on Arduino
-int redPin= 5;
+int redPin= 7;
 int greenPin = 6;
-int bluePin = 7;
+int bluePin = 5;
 
 void setup() {
   //Defining the pins as OUTPUT
