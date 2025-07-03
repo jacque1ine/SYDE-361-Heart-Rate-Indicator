@@ -1,57 +1,56 @@
-/*  Heart‑Rate Zone Monitor 
- *  -------------------------------------------------
- *  Input : LCD buttons,  heart‑rate sensor, switch
- *  Output: LCD (HR & zone), RGB LED (zone colour), buzzer (zone change)
- */
+// LED Pin Assignment 
+const int redPin    = 13;
+const int greenPin  = 12;
+const int bluePin   = 11;
 
-
-/* ---------- Pin assignments ---------- */
-const int redPin    = 5;
-const int greenPin  = 6;
-const int bluePin   = 7;
-// const int buzzerPin = ;
-// const int switchPin = ;
-
-//TODO: add the LCD select, up, down pins 
-//TODO: heart rate pins 
-
-/* ---------- Function prototypes ---------- */
-int  getMaxHeartRate(int age);          // 208 – 0.7 × age
-int  readFromHeartRateSensor();         // acquire HR from sensor
-int  getCurrentZone(int heartRate);     // map HR → zone #
-void setLEDColour(int zone);            // drive RGB LED for zone
-
-/* ---------- Global state ---------- */
-int           prevZone    = 0;
-unsigned long lastSample  = 0;          // ms timestamp of last HR read
-
-// User inputs 
+// TO DO: remove (consts for testing)
 int userAge = 25;
 int restingHR = 60;
 
-/* ---------- Arduino lifecycle ---------- */
+
+// /* ---------- Global state ---------- */
+// int           prevZone    = 0;
+// unsigned long lastSample  = 0;          // ms timestamp of last HR read
+
+
 void setup() {
   // TODO: initialize LCD, RGB LED pins, buzzer pin, buttons, HR sensor
+
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("Enter heart rate number:");
 }
 
 void loop() {
-  /* Every 5 s, sample heart‑rate and update outputs */
-  if (millis() - lastSample >= 5000) {
-    int heartRate = readFromHeartRateSensor();
-    int currZone  = getCurrentZone(heartRate);
+    if (Serial.available() > 0) {
+        int hr = readFromHeartRateSensor();
+        int zone = getCurrentZone(hr);
 
-    if (currZone != prevZone) {
-      // TODO: buzz to indicate zone change
-      setLEDColour(currZone);
+        getZoneColour(zone);
+
+
+      Serial.println("Enter heart rate:");
     }
+  /* Every 5 s, sample heart‑rate and update outputs */
+  // if (millis() - lastSample >= 5000) {
+  //   int heartRate = readFromHeartRateSensor();
+  //   int currZone  = getCurrentZone(heartRate);
 
-    // TODO: display heartRate & currZone on LCD
+  //   if (currZone != prevZone) {
+  //     // TODO: buzz to indicate zone change
+  //     setLEDColour(currZone);
+  //   }
 
-    prevZone   = currZone;
-    lastSample = millis();
-  }
+  //   // TODO: display heartRate & currZone on LCD
 
-  // TODO: handle button input for age, other UI tasks
+  //   prevZone   = currZone;
+  //   lastSample = millis();
+  // }
+
+    
 }
 
 /* ---------- Helper function stubs ---------- */
@@ -61,7 +60,7 @@ int getMaxHeartRate(int age) {
 
 int readFromHeartRateSensor() {
   // TODO: Replace this with actual sensor reading logic
-  return 120; // Example HR for testing
+  return Serial.parseInt();
 }
 
 // Calculate HRR and determine current zone using Karvonen
@@ -89,6 +88,31 @@ int getCurrentZone(int heartRate) {
   return 0; // No zone matched
 }
 
-void setLEDColour(int zone) {
-  // TODO: set RGB LED to colour corresponding to zone
+void getZoneColour(int zone) {
+  switch (zone) {
+    case 1:
+      setColor(170, 0, 255); // Yellow
+      break;
+    case 2:
+      setColor(0, 0, 255); // Green
+      break;
+    case 3: 
+      setColor(0,  255, 0); // Blue
+      break;
+    case 4: 
+      setColor(255, 155 , 0);// Purple
+      break;
+    case 5: 
+      setColor(255, 0, 0); // Red 
+      break;
+    // default: 
+    //   setColor(255, 255, 255); // White
+    //   break; 
+  }
+}
+
+void setColor(int redValue, int greenValue, int blueValue) {
+  analogWrite(redPin, redValue);
+  analogWrite(greenPin, greenValue);
+  analogWrite(bluePin, blueValue);
 }
