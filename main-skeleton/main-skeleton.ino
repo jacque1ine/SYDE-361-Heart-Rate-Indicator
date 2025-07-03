@@ -1,4 +1,8 @@
-// LED Pin Assignment
+
+
+
+// Pin Assignment
+const int buzzerPin = 3;
 const int redPin = 13;
 const int greenPin = 12;
 const int bluePin = 11;
@@ -17,6 +21,8 @@ void setup()
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
   pinMode(bluePin, OUTPUT);
+  
+  pinMode(buzzerPin, OUTPUT);
 
   Serial.begin(9600);
   Serial.println("Enter heart rate number:");
@@ -28,21 +34,20 @@ void loop()
   { // replace this with:   // if (millis() - lastSample >= 5000) {  --> Every 5 s, sample heart‑rate and update outputs
     int hr = readFromHeartRateSensor();
     int zone = getCurrentZone(hr);
-    setLEDColour(currZone);
     if (zone != prevZone)
     {
-      // buzz()
-    }
+      setZoneColour(zone);
+      buzz();
 
-    setZoneColour(zone);
+    }
 
     // TODO: isplay heartRate & currZone on LCD @tali @olivia
     // setLCDDisplay()
 
     //  lastSample = millis();
 
-    prevZone = zone
-                   Serial.println("Enter heart rate:");
+    prevZone = zone;
+    Serial.println("Enter heart rate:");
   }
 }
 
@@ -55,7 +60,8 @@ int getMaxHeartRate(int age)
 // TODO: Replace this with actual sensor reading logic @tali @olivia
 int readFromHeartRateSensor()
 {
-  return Serial.parseInt();
+  String input = Serial.readStringUntil('\n');
+  return input.toInt();
 }
 
 // Calculate HRR and determine current zone using Karvonen
@@ -122,4 +128,14 @@ void setColor(int redValue, int greenValue, int blueValue)
 
 /* ---------- Buzz and LCD Display ---------- */
 // void setLEDDisplay() // TODO @tali @olivia
-// void buzz() // TODO @sonia
+void buzz() {
+
+  digitalWrite(buzzerPin, HIGH); // Turn buzzer ON
+  delay(500);                    // Wait for 0.5 seconds
+  digitalWrite(buzzerPin, LOW);  // Turn buzzer OFF
+  delay(500);                    // Wait for 0.5 seconds
+
+  digitalWrite(buzzerPin, HIGH); // Turn buzzer ON
+  delay(700);                    // Wait for 0.5 seconds
+  digitalWrite(buzzerPin, LOW);  // Turn buzzer OFF
+}
