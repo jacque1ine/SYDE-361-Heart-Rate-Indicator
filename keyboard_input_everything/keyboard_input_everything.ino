@@ -1,9 +1,3 @@
-#define heartratePin A1
-#include "DFRobot_Heartrate.h"
-
-DFRobot_Heartrate heartrate(DIGITAL_MODE);
-
-// Pin Assignment
 const int buzzerPin = 3;
 const int bluePin = 11;
 const int greenPin = 12;
@@ -17,38 +11,29 @@ int prevZone = 0;
 
 void setup()
 {
-  // TODO: initialize LCD, RGB LED pins, buzzer pin, buttons, HR sensor
   Serial.begin(115200);
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
   pinMode(bluePin, OUTPUT);
-
   pinMode(buzzerPin, OUTPUT);
 
-  // Serial.begin(9600);
   // Serial.println("Enter heart rate number:");
 }
 
 void loop()
 {
-  // if (Serial.available() > 0) {
-  // { // replace this with:   // if (millis() - lastSample >= 5000) {  --> Every 5 s, sample heart‑rate and update outputs
-  int hr = readFromHeartRateSensor();
-  int zone = getCurrentZone(hr);
-  if (zone != prevZone)
+  if (Serial.available() > 0)
   {
-    setZoneColour(zone);
-    buzz();
+    Serial.println("Enter heart rate:");
+    int hr = readFromHeartRateSensor();
+    int zone = getCurrentZone(hr);
+    if (zone != prevZone)
+    {
+      setZoneColour(zone);
+      buzz();
+    }
+    prevZone = zone;
   }
-
-  // TODO: isplay heartRate & currZone on LCD @tali @olivia
-  // setLCDDisplay()
-
-  //  lastSample = millis();
-
-  prevZone = zone;
-  // Serial.println("Enter heart rate:");
-  // }
 }
 
 /* ---------- Zone Calculation ---------- */
@@ -60,18 +45,8 @@ int getMaxHeartRate(int age)
 // TODO: Replace this with actual sensor reading logic @tali @olivia
 int readFromHeartRateSensor()
 {
-  // String input = Serial.readStringUntil('\n');
-  // return input.toInt();
-  uint8_t rateValue;
-  heartrate.getValue(heartratePin); ///< A1 foot sampled values
-  rateValue = heartrate.getRate();  ///< Get heart rate value
-  if (rateValue)
-  {
-    Serial.println(rateValue);
-  }
-  delay(20);
-
-  return int(rateValue);
+  String input = Serial.readStringUntil('\n');
+  return input.toInt();
 }
 
 // Calculate HRR and determine current zone using Karvonen
@@ -140,7 +115,6 @@ void setColor(int redValue, int greenValue, int blueValue)
 // void setLEDDisplay() // TODO @tali @olivia
 void buzz()
 {
-
   digitalWrite(buzzerPin, HIGH); // Turn buzzer ON
   delay(500);                    // Wait for 0.5 seconds
   digitalWrite(buzzerPin, LOW);  // Turn buzzer OFF
