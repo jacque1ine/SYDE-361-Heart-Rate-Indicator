@@ -1,7 +1,12 @@
+// const int buzzerPin = 3;
+// const int bluePin = 3; //11
+// const int greenPin = 12; //12
+// const int redPin = 13; // 13
+
 const int buzzerPin = 3;
-const int bluePin = 11;
-const int greenPin = 12;
-const int redPin = 13;
+int redPin= 2;
+int greenPin = 12;
+int bluePin = 13;
 
 // TO DO: remove (consts for testing)
 int userAge = 100;
