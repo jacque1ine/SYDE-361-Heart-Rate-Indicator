@@ -4,7 +4,6 @@
 
 DFRobot_Heartrate heartrate(DIGITAL_MODE);
 
-
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define BACKLIGHT_PIN 10
@@ -16,10 +15,9 @@ int age = 20;
 int rhr = 65;
 int lastButton = -1; // To track last button state
 
-
 // Pin Assignment
 const int buzzerPin = 3;
-const int redPin= 2;
+const int redPin = 2;
 const int greenPin = 12;
 const int bluePin = 13;
 
@@ -30,29 +28,38 @@ const int bluePin = 13;
 int prevZone = 0;
 // int lastSample = 0;
 
-int setAge(int currentAge) {
+int setAge(int currentAge)
+{
   int selectedAge = currentAge;
 
-  while (true) {
+  while (true)
+  {
     int buttonVoltage = analogRead(A0);
 
-    if (buttonVoltage > 70 && buttonVoltage < 120) {
+    if (buttonVoltage > 70 && buttonVoltage < 120)
+    {
       // Up
       selectedAge++;
       delay(200); // Debounce
-    } else if (buttonVoltage > 230 && buttonVoltage < 270) {
+    }
+    else if (buttonVoltage > 230 && buttonVoltage < 270)
+    {
       // Down
       selectedAge--;
       delay(200);
-    } else if (buttonVoltage > 600 && buttonVoltage < 650) {
+    }
+    else if (buttonVoltage > 600 && buttonVoltage < 650)
+    {
       // Select
       age = selectedAge;
       return selectedAge;
     }
 
     // Optional: constrain age range
-    if (selectedAge < 0) selectedAge = 0;
-    if (selectedAge > 120) selectedAge = 120;
+    if (selectedAge < 0)
+      selectedAge = 0;
+    if (selectedAge > 120)
+      selectedAge = 120;
 
     // Display current age
     lcd.clear();
@@ -65,30 +72,38 @@ int setAge(int currentAge) {
   }
 }
 
-
-int setRhr(int currentRhr) {
+int setRhr(int currentRhr)
+{
   int selectedRhr = currentRhr;
 
-  while (true) {
+  while (true)
+  {
     int buttonVoltage = analogRead(A0);
 
-    if (buttonVoltage > 70 && buttonVoltage < 120) {
+    if (buttonVoltage > 70 && buttonVoltage < 120)
+    {
       // Up
       selectedRhr++;
       delay(200); // Debounce
-    } else if (buttonVoltage > 230 && buttonVoltage < 270) {
+    }
+    else if (buttonVoltage > 230 && buttonVoltage < 270)
+    {
       // Down
       selectedRhr--;
       delay(200);
-    } else if (buttonVoltage > 600 && buttonVoltage < 650) {
+    }
+    else if (buttonVoltage > 600 && buttonVoltage < 650)
+    {
       // Select
       rhr = selectedRhr;
       return selectedRhr;
     }
 
     // Optional: constrain rhr range
-    if (selectedRhr < 30) selectedRhr = 30;
-    if (selectedRhr > 120) selectedRhr = 120;
+    if (selectedRhr < 30)
+      selectedRhr = 30;
+    if (selectedRhr > 120)
+      selectedRhr = 120;
 
     // Display current rhr
     lcd.clear();
@@ -118,7 +133,7 @@ void setup()
   lcd.begin(16, 2);
   Serial.begin(9600);
   setAge(age);
-  Serial.print(age); // annie's code will directly access global age variable 
+  Serial.print(age); // annie's code will directly access global age variable
   delay(1000);
   lcd.clear();
   lcd.print(prompts[1]);
@@ -132,56 +147,72 @@ void setup()
 
   // Serial.begin(9600);
   // Serial.println("Enter heart rate number:");
-  // lastSample = 
+  // lastSample =
 }
 
 void loop()
 {
   // if (Serial.available() > 0) {
-  // { // replace this with:   // 
-    int hr = readFromHeartRateSensor();
-    int zone = getCurrentZone(hr);
-    if (zone != prevZone and hr)
-    {
-      setZoneColour(zone);
-      buzz();
-    }
+  // { // replace this with:   //
+  int hr = readFromHeartRateSensor();
+  int zone = getCurrentZone(hr);
+  if (zone != prevZone && hr > 0) // Only buzz on real change & valid HR
+  {
+    setZoneColour(zone);
+    buzz();
+    prevZone = zone; // Only update here after successful buzz
+  }
 
-    // TODO: isplay heartRate & currZone on LCD @tali @olivia
-    // setLCDDisplay()
+  // TODO: isplay heartRate & currZone on LCD @tali @olivia
+  // setLCDDisplay()
 
-    if (hr){
-      lcd.clear();
-      lcd.print("Zone: ");
-      lcd.print(zone);
-      lcd.print("  HR: ");
-      lcd.print(hr);
+  if (hr)
+  {
+    lcd.clear();
+    lcd.print("Zone: ");
+    lcd.print(zone);
+    lcd.print("  HR: ");
+    lcd.print(hr);
+  }
 
-    }
-
-
-    prevZone = zone;
   // Serial.println("Enter heart rate:");
 
-   int currentButton = -1;
+  int currentButton = -1;
   int buttonVoltage = analogRead(A0);
 
-  if (buttonVoltage < 20) {
+  if (buttonVoltage < 20)
+  {
     currentButton = 0; // Right
-  } else if (buttonVoltage > 70 && buttonVoltage < 120) {
+  }
+  else if (buttonVoltage > 70 && buttonVoltage < 120)
+  {
     currentButton = 1; // Up
-  } else if (buttonVoltage > 230 && buttonVoltage < 270) {
+  }
+  else if (buttonVoltage > 230 && buttonVoltage < 270)
+  {
     currentButton = 2; // Down
-  } else if (buttonVoltage > 600 && buttonVoltage < 650) {
+  }
+  else if (buttonVoltage > 600 && buttonVoltage < 650)
+  {
     currentButton = 3; // Select
   }
 
-  if (currentButton != -1 && currentButton != lastButton) {
-    switch (currentButton) {
-      case 0: Serial.println("Right"); break;
-      case 1: Serial.println("Up"); break;
-      case 2: Serial.println("Down"); break;
-      case 3: Serial.println("Select"); break;
+  if (currentButton != -1 && currentButton != lastButton)
+  {
+    switch (currentButton)
+    {
+    case 0:
+      Serial.println("Right");
+      break;
+    case 1:
+      Serial.println("Up");
+      break;
+    case 2:
+      Serial.println("Down");
+      break;
+    case 3:
+      Serial.println("Select");
+      break;
     }
   }
 
@@ -214,7 +245,6 @@ int readFromHeartRateSensor()
   return int(rateValue);
 }
 
-// Calculate HRR and determine current zone using Karvonen
 int getCurrentZone(int heartRate)
 {
   int maxHR = getMaxHeartRate(age);
@@ -228,18 +258,34 @@ int getCurrentZone(int heartRate)
       {0.90, 1.00}  // Zone 5
   };
 
-  for (int i = 0; i < 5; i++)
+  int zone1Lower = rhr + HRR * zones[0][0];
+  int zone5Lower = rhr + HRR * zones[4][0];
+
+  // If below Zone 1
+  if (heartRate < zone1Lower)
+  {
+    return 0;
+  }
+
+  // Zones 1 to 4
+  for (int i = 0; i < 4; i++)
   {
     int lowerBound = rhr + HRR * zones[i][0];
     int upperBound = rhr + HRR * zones[i][1];
 
     if (heartRate >= lowerBound && heartRate < upperBound)
     {
-      return i + 1; // zones are 1-indexed
+      return i + 1;
     }
   }
 
-  return 0; // No zone matched
+  // Zone 5: BPM >= lower bound
+  if (heartRate >= zone5Lower)
+  {
+    return 5;
+  }
+
+  return 0; 
 }
 
 /* ---------- Zone Colours ---------- */
@@ -278,8 +324,6 @@ void setColor(int redValue, int greenValue, int blueValue)
 
 /* ---------- Buzz and LCD Display ---------- */
 // void setLEDDisplay() // TODO @tali @olivia
-
-
 
 // void setLEDDisplay(int zone, int hr) { // TODO @tali @olivia
 //   lcd.clear();
