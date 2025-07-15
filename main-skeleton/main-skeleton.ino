@@ -7,6 +7,7 @@ DFRobot_Heartrate heartrate(DIGITAL_MODE);
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define BACKLIGHT_PIN 10
+#include <avr/power.h>
 
 int buttonVoltage = 0;
 bool buttonState = LOW;
@@ -148,6 +149,13 @@ void setup()
   // Serial.begin(9600);
   // Serial.println("Enter heart rate number:");
   // lastSample =
+
+
+  // Disable peripherals
+  power_spi_disable();
+  power_twi_disable();
+  power_timer1_disable();
+  power_timer2_disable();
 }
 
 void loop()
