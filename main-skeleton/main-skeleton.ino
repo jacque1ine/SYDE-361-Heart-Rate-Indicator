@@ -163,6 +163,7 @@ void loop()
   // if (Serial.available() > 0) {
   // { // replace this with:   //
   int hr = readFromHeartRateSensor();
+  
   int zone = getCurrentZone(hr);
   if (zone != prevZone && hr > 0) // Only buzz on real change & valid HR
   {
@@ -302,6 +303,9 @@ void setZoneColour(int zone)
 {
   switch (zone)
   {
+  case 0: 
+    setColor(0, 0, 0); // White 
+    break;
   case 1:
     setColor(170, 0, 255); // Yellow
     break;
